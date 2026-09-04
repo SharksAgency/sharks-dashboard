@@ -14,7 +14,12 @@ export async function proxy(request: NextRequest) {
   let response = NextResponse.next({ request })
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL
   const key = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY
-  if (!url || !key) return response
+  if (!url || !key) {
+    return new NextResponse("Dashboard configuration unavailable.", {
+      status: 503,
+      headers: { "Cache-Control": "no-store" },
+    })
+  }
 
   const supabase = createServerClient(url, key, {
     cookies: {
@@ -41,7 +46,10 @@ export async function proxy(request: NextRequest) {
   if (!user && !isPublic) {
     const nextUrl = request.nextUrl.clone()
     nextUrl.pathname = "/login"
-    nextUrl.searchParams.set("next", request.nextUrl.pathname)
+    nextUrl.searchParams.set(
+      "next",
+      `${request.nextUrl.pathname}${request.nextUrl.search}`,
+    )
     return NextResponse.redirect(nextUrl)
   }
 

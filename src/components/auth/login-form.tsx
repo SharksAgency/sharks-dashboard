@@ -8,6 +8,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
 import { Button } from "@/components/ui/button"
 import { createClient } from "@/lib/supabase/client"
+import { safeInternalPath } from "@/lib/urls"
 
 const schema = z.object({
   email: z.email("أدخل بريدًا إلكترونيًا صحيحًا / Enter a valid email"),
@@ -35,7 +36,7 @@ export function LoginForm() {
       return
     }
     const next = params.get("next")
-    router.replace(next?.startsWith("/") ? next : "/")
+    router.replace(safeInternalPath(next))
     router.refresh()
   })
 

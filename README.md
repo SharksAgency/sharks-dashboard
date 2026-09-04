@@ -27,10 +27,26 @@ The local dashboard runs on `http://localhost:4200`.
 | --- | --- |
 | `NEXT_PUBLIC_SUPABASE_URL` | The same Supabase project URL used by `SharksAgencyWeb`. |
 | `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | The same public publishable key used by `SharksAgencyWeb`. |
-| `NEXT_PUBLIC_SITE_URL` | Dashboard origin, used for auth callbacks. |
 | `NEXT_PUBLIC_PUBLIC_SITE_URL` | Public website origin, used by article preview links. |
 
 No service-role secret is required. Never expose a privileged key through `NEXT_PUBLIC_*`.
+
+## Vercel deployment
+
+Import `SharksAgency/sharks-dashboard` as a Next.js project and keep the default
+install, build and output settings. Set all three variables above for Production,
+Preview and Development before the first build. `NEXT_PUBLIC_PUBLIC_SITE_URL`
+must use the deployed public website origin and must not point to localhost.
+
+Auth callbacks use the browser's HTTPS origin. In Supabase Auth URL Configuration,
+set the production dashboard origin as the Site URL and allow its `/auth/callback`
+URL as a redirect. Password recovery uses the same callback with
+`?next=/reset-password`. Keep the local callback allowed only when local
+development is needed, and add preview URL patterns only when preview Auth is
+required.
+
+No `vercel.json` is required. Vercel should detect Next.js, run `npm install`, run
+`npm run build`, and use the default Next.js output.
 
 ## Supabase architecture
 

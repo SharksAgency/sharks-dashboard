@@ -1,9 +1,9 @@
 import type { NextConfig } from "next"
 
-const supabaseHost = (() => {
+const supabaseUrl = (() => {
   try {
     return process.env.NEXT_PUBLIC_SUPABASE_URL
-      ? new URL(process.env.NEXT_PUBLIC_SUPABASE_URL).hostname
+      ? new URL(process.env.NEXT_PUBLIC_SUPABASE_URL)
       : undefined
   } catch {
     return undefined
@@ -11,10 +11,11 @@ const supabaseHost = (() => {
 })()
 
 const remotePatterns: NonNullable<NextConfig["images"]>["remotePatterns"] = []
-if (supabaseHost) {
+if (supabaseUrl) {
   remotePatterns.push({
-    protocol: "https",
-    hostname: supabaseHost,
+    protocol: (supabaseUrl.protocol.replace(":", "") as "http" | "https") || "https",
+    hostname: supabaseUrl.hostname,
+    port: supabaseUrl.port || undefined,
     pathname: "/storage/v1/object/public/**",
   })
 }
